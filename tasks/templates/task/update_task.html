@@ -1,0 +1,31 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Tarea</title>
+    <link rel="stylesheet" href="{% static 'styles/tasks.css' %}">
+</head>
+<body>
+    <h1>Actualizar Tarea</h1>
+    <form method="POST" action="{% url 'updateTask' task.id %}">
+        {% csrf_token %}
+        <div>
+            <label for="title">Título de la Tarea:</label>
+            <input type="text" id="title" name="title" value="{{ task.title }}" required>
+        </div>
+        <div>
+            <label for="description">Descripción:</label>
+            <textarea id="description" name="description" required>{{ task.description }}</textarea>
+        </div>
+        <div>
+            <button type="submit">Guardar Cambios</button>
+            <a href="{% url 'AdminTask' %}">Cancelar</a>
+        </div>
+    </form>
+</body>
+</html>
+{% endblock %}

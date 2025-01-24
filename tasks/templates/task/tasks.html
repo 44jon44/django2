@@ -1,0 +1,56 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My App{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles/tasks.css'  %}">
+</head>
+
+<body>
+
+    <form action="/filter_task" method="GET">
+        <label for="filtro">Texto:</label>
+        <input type="text" id="filterTitle" name="filterTitle" placeholder="Ingresa texto..." required>
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <h1>Tasks List</h1>
+    {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th>Task Title</th>
+                <th>Description</th>
+                <th>created</th>
+                <th>date_completed</th>
+                <th>important</th>
+                <th>user</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.created }}</td>
+                <td>{{ task.date_completed }}</td>
+                {% if task.important %}
+                <td>Yes</td>
+                {% else %}
+                <td>No</td>
+                {% endif %}
+                <td>{{ task.user.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+
+</html>
+{% endblock %}

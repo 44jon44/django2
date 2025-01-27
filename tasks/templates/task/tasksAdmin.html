@@ -3,12 +3,14 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My App{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'styles/tasks.css'  %}">
 </head>
+
 <body>
     <h1>Admin Tasks</h1>
     <form action="/filter_task" method="GET">
@@ -23,22 +25,30 @@
                 <tr>
                     <th>Task Title</th>
                     <th>Description</th>
+                    <th>Completed</th>
                     <th>Update</th>
                     <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
                 {% for task in tasks %} <!-- Aquí va el código para cada elemento -->
-                    <tr>    
-                        <td>{{ task.title }}</td>
-                        <td>{{ task.description }}</td>
-                        <td><button type="submit" name="action" value="update_{{ task.id }}">Update</button></td>
-                        <td><input type="checkbox" name="tasks_to_delete" value="{{ task.id }}">Delete</td>
-                    </tr>
+                <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.description }}</td>
+                    {% if task.datecompleted != None %}
+                    <td>Yes</td>
+                    {% else %}
+                    <td><button type="submit" name="action" value="completed_{{ task.id }}">Mark completed</button></td>
+
+                    {% endif %}
+
+                    <td><button type="submit" name="action" value="update_{{ task.id }}">Update</button></td>
+                    <td><input type="checkbox" name="task_completed" value="{{ task.id }}">Delete</td>
+                </tr>
                 {% empty %}<!-- Aquí va el contenido si la lista está vacía -->
-                    <tr>
-                        <td colspan="3">No tasks available.</td>
-                    </tr>
+                <tr>
+                    <td colspan="3">No tasks available.</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -46,5 +56,6 @@
 
     </form>
 </body>
+
 </html>
 {% endblock %}

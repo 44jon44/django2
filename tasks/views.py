@@ -45,6 +45,7 @@ def tasks(request):
     return render(request, "task/tasks.html", {"tasks": tasks})
 
 
+@login_required
 def create_task(request):
     if request.method == "GET":
         return render(request, "task/create_task.html", {"form": TaskForm})
@@ -67,6 +68,7 @@ def home(request):
     return render(request, "home/home.html")
 
 
+@login_required
 def signout(request):
     logout(request)
     return redirect("home")
@@ -103,30 +105,46 @@ def findTasks(request):
     return render(request, "task/tasks.html", {"tasks": tasks})
 
 
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from .models import Task
+
+
+@login_required
 def manage_tasks(request):
     if request.method == "POST":
-
         action = request.POST.get("action")
         print(action)
-
+        # Acción de actualización
         if action and action.startswith("update_"):
             task_id = action.split("_")[1]
             print(f"Actualizar tarea con ID: {task_id}")
             return redirect("updateTask", task_id=task_id)
 
+        # Acción de marcar como completada
+
+        # Acción de eliminar tareas seleccionadas
         elif action == "delete_selected":
             tasks_to_delete = request.POST.getlist("tasks_to_delete")
-        if tasks_to_delete:
-            Task.objects.filter(
-                id__in=tasks_to_delete
-            ).delete()  # Elimina las tareas seleccionadas
-            print(f"Tareas eliminadas: {tasks_to_delete}")
+            if tasks_to_delete:
+                Task.objects.filter(
+                    id__in=tasks_to_delete
+                ).delete()  # Eliminar tareas seleccionadas
+                print(f"Tareas eliminadas: {tasks_to_delete}")
             return redirect("AdminTask")
-
+        elif action and action.startswith("completed_"):
+            task_id = action.split("_")[1]
+            print(task_id)
+            task = get_object_or_404(Task, id=task_id)
+            task.datecompleted = timezone.now()
+            task.save()
+            return redirect("AdminTask")
+    # Si no es POST, renderiza las tareas
     tasks = Task.objects.all()
     return render(request, "task/tasksAdmin.html", {"tasks": tasks})
 
 
+@login_required
 def update_task(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 
